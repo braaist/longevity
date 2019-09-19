@@ -42,4 +42,13 @@ entrez_converter <- function(ACCNUM){
 current_gse_featureData = fData(current_gse[[1]])
 current_gse_featureData["ENTREZID"] = sapply(current_gse_featureData[,1], entrez_converter)
 #delete genes without ENTREZID
-current_gse_featureData_test = na.omit(current_gse_featureData)
+NAfilter = !is.na(current_gse_featureData[,13])
+current_gse_assayData = current_gse_assayData[NAfilter,]
+current_gse_featureData = current_gse_featureData[NAfilter,]
+#get lists of genes with the same ENTREZID
+same_entrez_list = list()
+for (i in rownames(current_gse_featureData)){
+  if ((length(which(current_gse_featureData[i,13] == current_gse_featureData[,13])) != 1) && (list(which(current_gse_featureData[i,13] == current_gse_featureData[,13])) %notin% same_entrez_list)){
+    same_entrez_list = append(same_entrez_list, list(which(current_gse_featureData[i,13] == current_gse_featureData[,13])))
+  }
+}
