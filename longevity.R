@@ -2,11 +2,12 @@
 library(GEOquery)
 library(dplyr)
 library(mogene10sttranscriptcluster.db)
+library(ggplot2)
 current_gse = getGEO("gse55272")
 #create phenodata table
-current_gse_phenodata = data.frame(pData(phenoData(current_gse[[1]]))[,c(44,41,40,42,43,25)])
-current_gse_phenodata = subset(current_gse_phenodata, tissue.ch1=="Liver")
-current_gse_phenodata = current_gse_phenodata %>% mutate("diet" = "-", "drug" = "-", "dose" = "-","age_intervention" = "-")
+current_gse_phenoData = data.frame(pData(phenoData(current_gse[[1]]))[,c(44,41,40,42,43,25)])
+current_gse_phenoData = subset(current_gse_phenoData, tissue.ch1=="Liver")
+current_gse_phenoData = current_gse_phenoData %>% mutate("diet" = "-", "drug" = "-", "dose" = "-","age_intervention" = "-")
 #create assayData table
 current_gse_assayData = assayData((current_gse[[1]]))[["exprs"]]
 #get Liver tissue assayData
@@ -24,21 +25,21 @@ sd(gse_for_cluster[1,])
 pcamodel = prcomp(gse_for_cluster)
 cluster_values = as.data.frame(pcamodel$x)
 cluster_plot = ggplot(cluster_values, aes(cluster_values[,1], cluster_values[,2]))
-color_phd = paste(current_gse_phenodata[,2],current_gse_phenodata[,3],sep="/")
+color_phd = paste(current_gse_phenoData[,2],current_gse_phenoData[,3],sep="/")
 cluster_plot = cluster_plot + geom_point(aes(color = color_phd))
 cluster_plot
 #add ENTREZID column
-
 x = mogene10sttranscriptclusterENTREZID
 mapped_probes = mappedkeys(x)
 xx = as.list(x[mapped_probes])
-
 entrez_converter <- function(ACCNUM){
 #function for convertation ACCNUM to ENTREZID
-  + if(is.null(xx[[as.character(ACCNUM)]])){
-    + return(NA)}
-  + else{
-    + return(xx[[as.character(ACCNUM)]])}}
-full_fdata["ENTREZID"] = sapply(full_fdata[,1], entrez_converter)
-
-
+  if(is.null(xx[[as.character(ACCNUM)]])){
+    return(NA)
+  }else{
+    return(xx[[as.character(ACCNUM)]])}
+}
+current_gse_featureData = fData(current_gse[[1]])
+current_gse_featureData["ENTREZID"] = sapply(current_gse_featureData[,1], entrez_converter)
+#delete genes without ENTREZID
+current_gse_featureData_test = na.omit(current_gse_featureData)
