@@ -5,11 +5,11 @@ library(mogene10sttranscriptcluster.db)
 library(ggplot2)
 current_gse = getGEO("gse55272")
 #create phenodata table
-current_gse_phenoData = data.frame(pData(phenoData(current_gse[[1]]))[,c(44,41,40,42,43,25)])
+current_gse_phenoData = data.frame(pData(current_gse[[1]])[,c(44,41,40,42,43,25)])
 current_gse_phenoData = subset(current_gse_phenoData, tissue.ch1=="Liver")
 current_gse_phenoData = current_gse_phenoData %>% mutate("diet" = "-", "drug" = "-", "dose" = "-","age_intervention" = "-")
 #create assayData table
-current_gse_assayData = assayData((current_gse[[1]]))[["exprs"]]
+current_gse_assayData = exprs(current_gse[[1]])
 #get Liver tissue assayData
 current_gse_assayData = current_gse_assayData[,c(1:6,19:24)]
 #make norm plots(without log transformation, because current data is already logtransformed)
@@ -53,15 +53,16 @@ for (i in rownames(current_gse_featureData)){
     same_entrez_list = append(same_entrez_list, list(which(current_gse_featureData[i,13] == current_gse_featureData[,13])))
   }
 }
-
 #get mean of the microarray data for same ENTREZID
 for (i in same_entrez_list){
   same_entrez_matrix = double()
   for (j in i){
     same_entrez_matrix = rbind(same_entrez_matrix, as.double(current_gse_assayData[j,]))}
   mean_of_samples = apply(same_entrez_matrix, 2, mean)
+  current_gse_assayData[i[1],] = mean_of_samples
+  i = i[-1]
   for (m in i){
-    current_gse_assayData[m,] = mean_of_samples}
+    current_gse_assayData[m,] = NA}
 }
-  
-
+current_gse_assayData = na.omit(current_gse_assayData)
+#draft
