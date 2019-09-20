@@ -47,8 +47,21 @@ current_gse_assayData = current_gse_assayData[NAfilter,]
 current_gse_featureData = current_gse_featureData[NAfilter,]
 #get lists of genes with the same ENTREZID
 same_entrez_list = list()
+'%notin%' = Negate('%in%')
 for (i in rownames(current_gse_featureData)){
   if ((length(which(current_gse_featureData[i,13] == current_gse_featureData[,13])) != 1) && (list(which(current_gse_featureData[i,13] == current_gse_featureData[,13])) %notin% same_entrez_list)){
     same_entrez_list = append(same_entrez_list, list(which(current_gse_featureData[i,13] == current_gse_featureData[,13])))
   }
 }
+
+#get mean of the microarray data for same ENTREZID
+for (i in same_entrez_list){
+  same_entrez_matrix = double()
+  for (j in i){
+    same_entrez_matrix = rbind(same_entrez_matrix, as.double(current_gse_assayData[j,]))}
+  mean_of_samples = apply(same_entrez_matrix, 2, mean)
+  for (m in i){
+    current_gse_assayData[m,] = mean_of_samples}
+}
+  
+
