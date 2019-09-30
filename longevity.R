@@ -4,6 +4,7 @@ library(dplyr)
 library(mogene10sttranscriptcluster.db)
 library(ggplot2)
 library(limma)
+library(VennDiagram)
 source("functions.R")
 current_gse = getGEO("gse55272")
 #create phenodata table
@@ -70,7 +71,7 @@ cluster_plot
 
 #limma
 top_genes_limma = ""
-column_subset = c(1:3,7:9)
+column_subset = c(1:3,4:6)
 #create assayData table
 gse_assayData_for_limma = current_gse_assayData[,column_subset]
 #create des_matrix
@@ -82,5 +83,88 @@ cont_matrix = matrix(c(0,1), nrow=2, ncol = 1)
 
 limma_maker(gse_assayData_for_limma, desmatrix, cont_matrix)
 View(top_genes_limma)  
-top_genes_all = top_genes_limma
+top_genes_control = top_genes_limma
 
+
+#correlation
+top_genes_all <- top_genes_all[order(row.names(top_genes_all)),]
+top_genes_5month <- top_genes_5month[order(row.names(top_genes_5month)),]
+top_genes_24month <- top_genes_24month[order(row.names(top_genes_24month)),]
+top_genes_control <- top_genes_control[order(row.names(top_genes_control)),]
+
+un5_24 = union(rownames(top_genes_5month[top_genes_5month$adj.P.Val<0.05,]), rownames(top_genes_24month[top_genes_24month$adj.P.Val<0.05,]))
+unall_5 = union(rownames(top_genes_all[top_genes_all$adj.P.Val<0.05,]), rownames(top_genes_5month[top_genes_5month$adj.P.Val<0.05,]))
+unall_24 = union(rownames(top_genes_all[top_genes_all$adj.P.Val<0.05,]), rownames(top_genes_24month[top_genes_24month$adj.P.Val<0.05,]))
+top_genes_all_for_5 = subset(top_genes_all, rownames(top_genes_all) %in% unall_5)
+top_genes_5_for_all = subset(top_genes_5month, rownames(top_genes_5month) %in% unall_5)
+top_genes_all_for_24 = subset(top_genes_all, rownames(top_genes_all) %in% unall_24)
+top_genes_24_for_all = subset(top_genes_24month, rownames(top_genes_24month) %in% unall_24)
+top_genes_24_for_5 = subset(top_genes_24month, rownames(top_genes_24month) %in% un5_24)
+top_genes_5_for_24 = subset(top_genes_5month, rownames(top_genes_5month) %in% un5_24)
+
+#DRAFT
+#create vennDiagramm for interception of genes
+
+top_genes_all_suff_pval = top_genes_all[top_genes_all$adj.P.Val<0.05,]
+top_genes_5month_suff_pval = top_genes_5month[top_genes_5month$adj.P.Val<0.05,]
+top_genes_24month_suff_pval = top_genes_24month[top_genes_24month$adj.P.Val<0.05,]
+top_genes_control_suff_pval = top_genes_control[top_genes_control$adj.P.Val<0.05,]
+
+top_genes_all_plus = top_genes_all_suff_pval[top_genes_all_suff_pval$logFC>0,]
+top_genes_all_minus = top_genes_all_suff_pval[top_genes_all_suff_pval$logFC<0,]
+top_genes_5month_plus = top_genes_5month_suff_pval[top_genes_5month_suff_pval$logFC>0,]
+top_genes_5month_minus = top_genes_5month_suff_pval[top_genes_5month_suff_pval$logFC<0,]
+top_genes_24month_plus = top_genes_24month_suff_pval[top_genes_24month_suff_pval$logFC>0,]
+top_genes_24month_minus = top_genes_24month_suff_pval[top_genes_24month_suff_pval$logFC<0,]
+top_genes_control_plus = top_genes_control_suff_pval[top_genes_control_suff_pval$logFC>0,]
+top_genes_control_minus = top_genes_control_suff_pval[top_genes_control_suff_pval$logFC<0,]
+
+#diffexpressed genes with sufficient p-val
+length(rownames(top_genes_all[top_genes_all$adj.P.Val<0.05,]))
+length(rownames(top_genes_5month[top_genes_5month$adj.P.Val<0.05,]))
+length(rownames(top_genes_24month[top_genes_24month$adj.P.Val<0.05,]))
+
+
+grid.newpage()
+draw.triple.venn(area1 = length(rownames(top_genes_all_plus)), 
+                 area2 = length(rownames(top_genes_5month_plus)),
+                 area3 = length(rownames(top_genes_24month_plus)),
+                 n12 = length(intersect(rownames(top_genes_all_plus), rownames(top_genes_5month_plus))),
+                 n23 = length(intersect(rownames(top_genes_5month_plus), rownames(top_genes_24month_plus))),
+                 n13 = length(intersect(rownames(top_genes_all_plus), rownames(top_genes_24month_plus))), 
+                 n123 = length(intersect(intersect(rownames(top_genes_all_plus), rownames(top_genes_5month_plus)), rownames(top_genes_24month_plus))), 
+                 category = c("All", "5 month", "24 month"), lty = "blank", 
+                 fill = c("skyblue", "pink", "magenta"))
+
+grid.newpage()
+draw.triple.venn(area1 = length(rownames(top_genes_all_minus)), 
+                 area2 = length(rownames(top_genes_5month_minus)),
+                 area3 = length(rownames(top_genes_24month_minus)),
+                 n12 = length(intersect(rownames(top_genes_all_minus), rownames(top_genes_5month_minus))),
+                 n23 = length(intersect(rownames(top_genes_5month_minus), rownames(top_genes_24month_minus))),
+                 n13 = length(intersect(rownames(top_genes_all_minus), rownames(top_genes_24month_minus))), 
+                 n123 = length(intersect(intersect(rownames(top_genes_all_minus), rownames(top_genes_5month_minus)), rownames(top_genes_24month_minus))), 
+                 category = c("All", "5 month", "24 month"), lty = "blank", 
+                 fill = c("skyblue", "pink", "magenta"))
+
+grid.newpage()
+draw.triple.venn(area1 = length(rownames(top_genes_control_minus)), 
+                 area2 = length(rownames(top_genes_5month_plus)),
+                 area3 = length(rownames(top_genes_24month_plus)),
+                 n12 = length(intersect(rownames(top_genes_control_minus), rownames(top_genes_5month_plus))),
+                 n23 = length(intersect(rownames(top_genes_5month_plus), rownames(top_genes_24month_plus))),
+                 n13 = length(intersect(rownames(top_genes_control_minus), rownames(top_genes_24month_plus))), 
+                 n123 = length(intersect(intersect(rownames(top_genes_control_minus), rownames(top_genes_5month_plus)), rownames(top_genes_24month_plus))), 
+                 category = c("control", "5 month", "24 month"), lty = "blank", 
+                 fill = c("skyblue", "pink", "magenta"))
+
+grid.newpage()
+draw.triple.venn(area1 = length(rownames(top_genes_control_plus)), 
+                 area2 = length(rownames(top_genes_5month_minus)),
+                 area3 = length(rownames(top_genes_24month_minus)),
+                 n12 = length(intersect(rownames(top_genes_control_plus), rownames(top_genes_5month_minus))),
+                 n23 = length(intersect(rownames(top_genes_5month_minus), rownames(top_genes_24month_minus))),
+                 n13 = length(intersect(rownames(top_genes_control_plus), rownames(top_genes_24month_minus))), 
+                 n123 = length(intersect(intersect(rownames(top_genes_control_plus), rownames(top_genes_5month_minus)), rownames(top_genes_24month_minus))), 
+                 category = c("control", "5 month", "24 month"), lty = "blank", 
+                 fill = c("skyblue", "pink", "magenta"))
