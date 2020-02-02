@@ -28,7 +28,7 @@ current_gse_featureData = fData(current_gse_geo[[1]])
 #########################################################################################
 #########################################################################################
 #########################################################################################
-current_gse_assayData = read.csv("Documents/longevity/longevity/gse102348/WT-1_fpkm.txt", sep = '\t')
+current_gse_assayData = read.csv("gse102348/WT-1_fpkm.txt", sep = '\t')
 
 
 #STEP 1: logtransformation (data is not transformed)
@@ -102,13 +102,13 @@ for (i in rownames(current_gse_assayData)){
     same_entrez_list = append(same_entrez_list, list(which(current_gse_assayData[i,8] == current_gse_assayData[,8])))
   }
 }
-#get mean of the microarray data for same ENTREZID
+#get sum of the microarray data for same ENTREZID
 for (i in same_entrez_list){
   same_entrez_matrix = double()
   for (j in i){
   same_entrez_matrix = rbind(same_entrez_matrix, as.double(current_gse_assayData[j,3:7]))}
-  mean_of_samples = apply(same_entrez_matrix, 2, mean)
-  current_gse_assayData[i[1],3:7] = mean_of_samples
+  sum_of_samples = apply(same_entrez_matrix, 2, sum)
+  current_gse_assayData[i[1],3:7] = sum_of_samples
   i = i[-1]
   for (m in i){
     current_gse_assayData[m,] = NA}
@@ -160,7 +160,7 @@ first_entity_df$day = rownames(first_entity_df)
 ggplot(first_entity_df, aes(day, first_entity_df, color = day))  + geom_point() +
   labs(colour = "days", x = "age", y = "expression", title = paste("entrez ID", first_entity, current_gse, sep = " "))
 
-save(top_genes_limma,file="Documents/longevity/longevity/gse102348//top_genes_WT1.Rda")
+save(top_genes_limma,file="gse102348/top_genes_WT1.Rda")
 
 
 #########################################################################################
@@ -173,7 +173,7 @@ save(top_genes_limma,file="Documents/longevity/longevity/gse102348//top_genes_WT
 #########################################################################################
 #########################################################################################
 #########################################################################################
-current_gse_assayData = read.csv("Documents/longevity/longevity/gse102348/WT-2_fpkm.txt", sep = '\t')
+current_gse_assayData = read.csv("gse102348/WT-2_fpkm.txt", sep = '\t')
 
 #STEP 1: logtransformation (data is not transformed)
 current_gse_assayData[,3:8] = log(current_gse_assayData[,3:8] + 1)
@@ -246,13 +246,13 @@ for (i in rownames(current_gse_assayData)){
     same_entrez_list = append(same_entrez_list, list(which(current_gse_assayData[i,8] == current_gse_assayData[,8])))
   }
 }
-#get mean of the microarray data for same ENTREZID
+#get sum of the microarray data for same ENTREZID
 for (i in same_entrez_list){
   same_entrez_matrix = double()
   for (j in i){
     same_entrez_matrix = rbind(same_entrez_matrix, as.double(current_gse_assayData[j,3:7]))}
-  mean_of_samples = apply(same_entrez_matrix, 2, mean)
-  current_gse_assayData[i[1],3:7] = mean_of_samples
+  sum_of_samples = apply(same_entrez_matrix, 2, sum)
+  current_gse_assayData[i[1],3:7] = sum_of_samples
   i = i[-1]
   for (m in i){
     current_gse_assayData[m,] = NA}
@@ -304,7 +304,7 @@ first_entity_df$day = rownames(first_entity_df)
 ggplot(first_entity_df, aes(day, first_entity_df, color = day))  + geom_point() +
   labs(colour = "days", x = "age", y = "expression", title = paste("entrez ID", first_entity, current_gse, sep = " "))
 
-save(top_genes_limma,file="Documents/longevity/longevity/gse102348/top_genes_WT2.Rda")
+save(top_genes_limma,file="gse102348/top_genes_WT2.Rda")
 
 
 

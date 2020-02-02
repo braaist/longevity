@@ -5,7 +5,7 @@ library(dplyr)
 library(ggplot2)
 library(limma)
 library(biomaRt)
-library(org.Mm.eg.db)
+library(mogene20sttranscriptcluster.db)
 
 entrez_converter <- function(ACCNUM){
   #function for convertation ACCNUM to ENTREZID
@@ -67,6 +67,42 @@ ilmna2entrez_hs <- function(ILMN_IDS){
   mapped_probes = mappedkeys(x)
   xx = as.list(x[mapped_probes])
   for (i in ILMN_IDS){
+    if(is.null(xx[[as.character(i)]])){
+      ENTREZ_IDS = c(ENTREZ_IDS, NA)
+    }
+    else if(length(xx[[as.character(i)]]) != 1){
+      ENTREZ_IDS = c(ENTREZ_IDS, NA)
+    }else{
+      ENTREZ_IDS = c(ENTREZ_IDS, xx[[as.character(i)]])
+    }
+  }
+  return(ENTREZ_IDS)
+}
+
+ilmnav32entrez_hs <- function(ILMN_IDS){
+  ENTREZ_IDS = c()
+  x <- illuminaHumanv3ENTREZID
+  mapped_probes = mappedkeys(x)
+  xx = as.list(x[mapped_probes])
+  for (i in ILMN_IDS){
+    if(is.null(xx[[as.character(i)]])){
+      ENTREZ_IDS = c(ENTREZ_IDS, NA)
+    }
+    else if(length(xx[[as.character(i)]]) != 1){
+      ENTREZ_IDS = c(ENTREZ_IDS, NA)
+    }else{
+      ENTREZ_IDS = c(ENTREZ_IDS, xx[[as.character(i)]])
+    }
+  }
+  return(ENTREZ_IDS)
+}
+
+mogene2entrez_mm <- function(AFFY_IDS){
+  ENTREZ_IDS = c()
+  x <- mogene20sttranscriptclusterENTREZID
+  mapped_probes = mappedkeys(x)
+  xx = as.list(x[mapped_probes])
+  for (i in AFFY_IDS){
     if(is.null(xx[[as.character(i)]])){
       ENTREZ_IDS = c(ENTREZ_IDS, NA)
     }
