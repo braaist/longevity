@@ -1,11 +1,23 @@
-#SCRIPT for calculating correlation matrix and building heatmap from list with GSE
-
 library(ggplot2)
 library(reshape2)
+
+#LOAD all FClists
+names_vec = c()
+gse_list_main = list()
+for (i in list.files("all_FClists2/")){
+  flops = readRDS(paste("all_FClists2/", i, sep=""))
+  gse_list_main = append(gse_list_main, list(flops))
+  names_vec = c(names_vec, i)
+}
+names(gse_list_main) = names_vec
+
+#SCRIPT for calculating correlation matrix and building heatmap from list with GSE
+
 
 
 cormat = data.frame()
 for (i in names(gse_list_main)){
+  print(i)
   for (j in names(gse_list_main)){
     pops = (union(rownames(gse_list_main[[i]])[1:150], rownames(gse_list_main[[j]])[1:150]))
     temp_m = data.frame()
@@ -55,5 +67,6 @@ ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
   coord_fixed()
 
 ggheatmap
+
 
 
