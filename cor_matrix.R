@@ -19,7 +19,7 @@ cormat = data.frame()
 for (i in names(gse_list_main)){
   print(i)
   for (j in names(gse_list_main)){
-    pops = (union(rownames(gse_list_main[[i]])[1:150], rownames(gse_list_main[[j]])[1:150]))
+    pops = (union(rownames(gse_list_main[[i]])[1:300], rownames(gse_list_main[[j]])[1:300]))
     temp_m = data.frame()
     for (m in pops){
       temp_m[m,1] = gse_list_main[[i]][m,1]

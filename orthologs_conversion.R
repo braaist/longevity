@@ -109,13 +109,11 @@ saveRDS(flops, file="all_FClists2/top_genes_OS(v)KM_gse81891_ort.Rds")
 
 
 #gse89455
-for (name in list.files("all_FClists2/")){
-  a = strsplit(name, "_")
-  for (m in a){
-    if(m[4] == "gse89455.Rds"){
+for (name in list.files("Documents/longevity/longevity/gse89455/")){
+  if (file_ext(name) == "Rds"){
+    print(name)
       
-      flops = readRDS(paste("all_FClists2/", name, sep=""))
-      flops = flops[1:1000,]
+      flops = readRDS(paste("Documents/longevity/longevity/gse89455/", name, sep=""))
       flops$orthologs = NA
       flops$original = rownames(flops)
       rownames(flops) = 1:nrow(flops)
@@ -133,7 +131,7 @@ for (name in list.files("all_FClists2/")){
       '%notin%' = Negate('%in%')
       for (i in rownames(flops)){
         print(i)
-        if ((length(which(flops[i,'orthologs'] == flops[,'orthologs'])) != 1) && (list(which(flops[i,'orthologs'] == flops[,'orthologs'])) %notin% same_entrez_list)){
+        if ((length(which(flops[i,'orthologs'] == flops[,'orthologs'])) != 1) && (list(which(flops[i,'orthologs'] == flops[,'orthologs'])) %notin% same_ort_list)){
           same_ort_list = append(same_ort_list, list(which(flops[i,'orthologs'] == flops[,'orthologs'])))
         }
       }
@@ -151,7 +149,8 @@ for (name in list.files("all_FClists2/")){
       flops$orthologs = NULL
       flops_out = paste("ort_cut_", name, sep = "")
       print(flops_out)
-      saveRDS(flops, file=paste("all_FClists2/", flops_out, sep="", ))
+      file = paste("Documents/longevity/longevity/gse89455/", flops_out, sep="")
+      saveRDS(flops, file)
     }
   }
 }

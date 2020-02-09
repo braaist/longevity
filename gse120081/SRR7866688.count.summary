@@ -1,0 +1,15 @@
+Status	../star_output/SRR7866688/Aligned.sortedByCoord.out.bam
+Assigned	2141217
+Unassigned_Unmapped	0
+Unassigned_Read_Type	0
+Unassigned_Singleton	0
+Unassigned_MappingQuality	0
+Unassigned_Chimera	0
+Unassigned_FragmentLength	0
+Unassigned_Duplicate	0
+Unassigned_MultiMapping	1401588
+Unassigned_Secondary	0
+Unassigned_NonSplit	0
+Unassigned_NoFeatures	128152
+Unassigned_Overlapping_Length	0
+Unassigned_Ambiguity	135508
