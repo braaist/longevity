@@ -1,10 +1,13 @@
 #script for running deming regression on globe server
 #at first, save logFCmatrixregr, cortestsign500 and deming_minimizer as .Rds objects
+#save .Rds objects
+
+
 
 #load .Rds objects
-logFCmatrixregr = readRDS("logFCmatrixregr.Rds")
-cortestsign500 = readRDS("cortestsign500.Rds")
-totalrownamematrix = readRDS("totalrownamematrix.Rds")
+logFCmatrixregr = readRDS("logFCmatrixregr_mouse.Rds")
+cortestsign500 = readRDS("cortestsign500_mouse.Rds")
+totalrownamematrix = readRDS("totalrownamematrix_mouse.Rds")
 
 deming_minimizer = function(logFCmatrixregr){
   fn = function(k_no_first){
@@ -45,4 +48,4 @@ deming_minimizer = function(logFCmatrixregr){
 res = deming_minimizer(logFCmatrixregr)
 
 #dump result as .Rds file
-saveRDS(res, file = "deming_result.Rds")
+saveRDS(res, file = "deming_result_mouse.Rds")
